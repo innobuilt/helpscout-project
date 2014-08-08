@@ -18,7 +18,7 @@ public class CustomerController {
     @Autowired private CustomerRepository repository;
 
     @RequestMapping(method = RequestMethod.GET, value = "/customer/{id}")
-    public @ResponseBody Customer getCustomer(@PathVariable String id) {
+    public @ResponseBody Customer getCustomer(@PathVariable final String id) {
         return repository.findOne(id);
     }
 
@@ -27,4 +27,16 @@ public class CustomerController {
         Customer newCustomer =  repository.save(customer);
         return new ResponseEntity<Customer>(newCustomer, HttpStatus.CREATED);
     }
+
+    @RequestMapping(method = RequestMethod.PATCH, value = "/customer")
+    public @ResponseBody Customer updateCustomer(@RequestBody @Valid final Customer customer) {
+        return repository.save(customer);
+    }
+
+    @RequestMapping(method = RequestMethod.DELETE, value = "/customer/{id}")
+    public ResponseEntity deleteCustomer(@PathVariable final String id) {
+        repository.delete(id);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
+    }
+
 }

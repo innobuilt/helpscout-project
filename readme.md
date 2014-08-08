@@ -21,3 +21,11 @@ gradle bootRun
 
 #### Click
 <http://localhost:8080/>
+
+### Hours
+- 1 8/2
+- 3 8/8
+
+### Issues
+- Research returning a 201 CREATED
+- Research integration testing with Spock

@@ -18,6 +18,7 @@ class ApplicationSpec extends Specification {
   def "POST /customer responds with 201 CREATED and a JSON representation of the customer"() {
     when:
     def resp = endpoint.post([ path: 'customer', requestContentType: appJson, body: customer ])
+
     then:
     with(resp) {
       status == 201
@@ -33,14 +34,43 @@ class ApplicationSpec extends Specification {
   def "GET /customer/{id} responds with 200 OK and a JSON representation of the customer"() {
     given: "A customer is created successfully"
     def createdCustomer = endpoint.post([ path: 'customer', requestContentType: appJson, body: customer ]).data
+
     when: "The customer is requested"
     def resp = endpoint.get([ path: 'customer/' + createdCustomer.id ])
+
     then:
     with(resp) {
       status == 200
       contentType == appJson
       data == createdCustomer
     }
+  }
+
+  def "PATCH /customer responds with 200 OK and a JSON representation of the updated customer"() {
+    given: "A customer is created successfully"
+    def createdCustomer = endpoint.post([ path: 'customer', requestContentType: appJson, body: customer ]).data
+
+    when: "The customer is updated"
+    createdCustomer.firstName = "Jes"
+    createdCustomer.lastName = "Pascile"
+    def resp = endpoint.patch([ path: 'customer', requestContentType: appJson, body: createdCustomer ])
+
+    then:
+    with(resp) {
+      status == 200
+      contentType == appJson
+      data == createdCustomer
+    }
+  }
+
+  def "DELETE /customer/{id} responds with 204 NO CONTENT"() {
+    given: "A customer is created successfully"
+    def createdCustomer = endpoint.post([ path: 'customer', requestContentType: appJson, body: customer ]).data
+
+    when: "The customer is deleted"
+    def resp = endpoint.delete([ path: 'customer/' + createdCustomer.id])
+
+    then: resp.status == 204
   }
 
 }
