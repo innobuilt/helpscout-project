@@ -1,0 +1,31 @@
+{
+  "exclude": [
+    "^(node_modules|bower_components|\\.imdone|target|build)[\\/\\\\]?|\\.(git|svn|hg|npmignore)|\\~$|\\.(jpg|png|gif|swp|ttf|otf)$"
+  ],
+  "watcher": true,
+  "lists": [
+    {
+      "name": "TODO",
+      "hidden": false
+    }
+  ],
+  "marked": {
+    "gfm": true,
+    "tables": true,
+    "breaks": false,
+    "pedantic": false,
+    "sanitize": true,
+    "smartLists": true,
+    "langPrefix": "language-"
+  },
+  "code": {
+    "include_lists": [
+      "TODO",
+      "DOING",
+      "DONE",
+      "PLANNING",
+      "FIXME",
+      "ARCHIVE"
+    ]
+  }
+}
