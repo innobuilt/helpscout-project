@@ -9,6 +9,7 @@ import piascik.domain.Customer;
 import piascik.repository.CustomerRepository;
 
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * @author <a href="http://about.me/jesse.piascik">Jesse Piascik</a>
@@ -38,5 +39,11 @@ public class CustomerController {
         repository.delete(id);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/customer/similar/{id}")
+    public @ResponseBody List<Customer> findSimilar(@PathVariable final String id) {
+        return repository.findSimilar(id);
+    }
+
 
 }

@@ -33,7 +33,7 @@ class ApplicationSpec extends Specification {
 
   def "GET /customer/{id} responds with 200 OK and a JSON representation of the customer"() {
     given: "A customer is created successfully"
-    def createdCustomer = endpoint.post([ path: 'customer', requestContentType: appJson, body: customer ]).data
+    def createdCustomer = createCustomer()
 
     when: "The customer is requested"
     def resp = endpoint.get([ path: 'customer/' + createdCustomer.id ])
@@ -48,7 +48,7 @@ class ApplicationSpec extends Specification {
 
   def "PATCH /customer responds with 200 OK and a JSON representation of the updated customer"() {
     given: "A customer is created successfully"
-    def createdCustomer = endpoint.post([ path: 'customer', requestContentType: appJson, body: customer ]).data
+    def createdCustomer = createCustomer()
 
     when: "The customer is updated"
     createdCustomer.firstName = "Jes"
@@ -65,12 +65,31 @@ class ApplicationSpec extends Specification {
 
   def "DELETE /customer/{id} responds with 204 NO CONTENT"() {
     given: "A customer is created successfully"
-    def createdCustomer = endpoint.post([ path: 'customer', requestContentType: appJson, body: customer ]).data
+    def createdCustomer = createCustomer()
 
     when: "The customer is deleted"
     def resp = endpoint.delete([ path: 'customer/' + createdCustomer.id])
 
     then: resp.status == 204
+  }
+
+  def "GET /customer/similar/{id} responds with 200 OK and a JSON array of similar customers"() {
+    given: "There are similar customers"
+    createCustomer()
+    def id = createCustomer([firstName: 'John', lastName: 'Doe']).id
+
+    when: "similar customers are requested"
+    def resp = endpoint.get([path: 'customer/similar/' + id])
+
+    then: resp.status == 200
+    resp.data.size > 0
+
+  }
+
+  // Helpers
+  def createCustomer(map = customer) {
+    def data = customer + map
+    endpoint.post([ path: 'customer', requestContentType: appJson, body: data ]).data
   }
 
 }
