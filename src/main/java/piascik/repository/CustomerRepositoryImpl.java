@@ -30,7 +30,7 @@ public class CustomerRepositoryImpl implements CustomerRepositoryCustom {
         // At least one email matches
         Criteria emailMatchCriteria = where("emails").in(Arrays.asList(customer.getEmails()));
 
-        // Name and company ignore case Criteria
+        // Name and company ignore case with regex Criteria
         // Criteria nameIgnoreCaseMatchCriteria =
 
 

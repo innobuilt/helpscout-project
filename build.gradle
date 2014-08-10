@@ -37,3 +37,9 @@ dependencies {
 task wrapper(type: Wrapper) {
   gradleVersion = '1.11'
 }
+
+test {
+  maxParallelForks = 2
+}
+
+test.dependsOn(bootRun)
