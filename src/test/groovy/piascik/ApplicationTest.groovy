@@ -1,12 +1,25 @@
 package piascik
 
 import groovyx.net.http.RESTClient
+import org.junit.runner.RunWith
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.IntegrationTest
+import org.springframework.boot.test.SpringApplicationConfiguration
+import org.springframework.boot.test.SpringApplicationContextLoader
+import org.springframework.test.context.ContextConfiguration
+import org.springframework.test.context.web.WebAppConfiguration
+import piascik.repository.CustomerRepository
 import spock.lang.Specification
 
 /**
  * @author <a href="http://about.me/jesse.piascik">Jesse Piascik</a>
  */
-class ApplicationSpec extends Specification {
+@ContextConfiguration(loader = SpringApplicationContextLoader.class, classes = Application.class)
+@WebAppConfiguration   // 3
+@IntegrationTest   // 4
+class ApplicationTest extends Specification {
+  @Autowired CustomerRepository repository;
+
   def endpoint = new RESTClient( 'http://localhost:8080/' )
   def customer = [firstName:'Jesse',
                   lastName:'Piascik',
@@ -14,6 +27,10 @@ class ApplicationSpec extends Specification {
                   company: 'Innobuilt Software LLC',
                   jobTitle: 'CXO']
   def appJson = 'application/json';
+
+  def setup() {
+    repository.deleteAll();
+  }
 
   def "POST /customer responds with 201 CREATED and a JSON representation of the customer"() {
     when:
@@ -75,14 +92,19 @@ class ApplicationSpec extends Specification {
 
   def "GET /customer/similar/{id} responds with 200 OK and a JSON array of similar customers"() {
     given: "There are similar customers"
-    createCustomer()
-    def id = createCustomer([firstName: 'John', lastName: 'Doe']).id
+    def id = createCustomer().id
+    // A customer with matching email
+    createCustomer([firstName: 'John', lastName: 'Doe', emails:['jesse@innobuilt.com']])
+    // A customer with matching name and company
+    createCustomer([emails:['john.doe@piascik.net']])
+    // A customer with first initial, lastName and company match
+    createCustomer([firstName: 'John', emails:['john.doe@piascik.net']])
 
     when: "similar customers are requested"
     def resp = endpoint.get([path: 'customer/similar/' + id])
 
     then: resp.status == 200
-    resp.data.size > 0
+    resp.data.size == 3
 
   }
 

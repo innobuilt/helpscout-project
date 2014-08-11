@@ -1,5 +1,6 @@
 package piascik.repository;
 
+import com.sun.org.apache.xerces.internal.impl.xpath.regex.RegularExpression;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -27,15 +28,20 @@ public class CustomerRepositoryImpl implements CustomerRepositoryCustom {
                              .andOperator(where("lastName").is(customer.getLastName()),
                                           where("company").is(customer.getCompany()));
 
+        // First initial in firstName, lastName and company match
+        Criteria firstInitialMatchCriteria = where("firstName").regex(customer.getFirstName().substring(0,1) + ".*")
+                .andOperator(where("lastName").is(customer.getLastName()),
+                             where("company").is(customer.getCompany()));
+
+
         // At least one email matches
         Criteria emailMatchCriteria = where("emails").in(Arrays.asList(customer.getEmails()));
 
-        // Name and company ignore case with regex Criteria
-        // Criteria nameIgnoreCaseMatchCriteria =
 
 
         // Run the query
         return mongoTemplate.find(query(where("id").ne(customer.getId())  // Don't return the current customer
-                                        .orOperator(nameMatchCriteria, emailMatchCriteria)), Customer.class);
+                                  .orOperator(nameMatchCriteria, emailMatchCriteria, firstInitialMatchCriteria)),
+                                  Customer.class);
     }
 }
